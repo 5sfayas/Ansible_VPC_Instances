@@ -106,6 +106,7 @@
         state: present
         tags:
           Name: IG_Gateway
+      register: igw
 # end of internet gateway creation---------------------------
 
 # create routing table for public and private subnets
@@ -121,3 +122,22 @@
           - pub_sub_az_1a  "{{pub_sub_az_1a.subnet.id}}"
           - pub_sub_az_1b  "{{pub_sub_az_1b.subnet.id}}"
           - pub_sub_az_1c  "{{pub_sub_az_1c.subnet.id}}"
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{ igw.gateway_id }}"
+
+# I am going to store vpc_id, IG_Gateway_id & subnets_ids to group_vars/all.yml
+# Though I can use it later.
+
+- hosts: control
+  tasks:
+    - name: copy ids as variables
+      lineinfile:
+        path: ./group_vars/all.yml
+        line: "{{item}}"
+        with_item:
+          - "vpc_id: "{{vpc_info.vpc.id}}""
+          - "pub_sub_az_1a: "{{pub_sub_az_1a.subnet.id}}""
+          - "pub_sub_az_1b: "{{pub_sub_az_1b.subnet.id}}""
+          - "pub_sub_az_1c: "{{pub_sub_az_1c.subnet.id}}""
+          - "IG_Gateway_id: "{{ igw.gateway_id }}"
