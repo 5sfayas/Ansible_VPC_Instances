@@ -6,12 +6,14 @@
     name: "ubuntu/images/ebs/ubuntu-trusty-14.04-amd64-server-*"
     owner: self
     aws_region: "{{default_region}}"
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
   register: result_ami
 
 
 - name: create ec2 instance 3 with demo tag
   ec2:
-    key_name: ec2_key
+    key_name: "{{key_name}}"
     group: LAMP_Stack
     instance_type: t2.micro
     #region=us-east-1  ami-c998b6b2
@@ -27,6 +29,8 @@
         - mysql
         - lb
     termination_protection: yes
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
   register: ec2
 
 - name: add instance IP to hosts group

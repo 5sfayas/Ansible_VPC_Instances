@@ -1,0 +1,123 @@
+---
+# create vpc 10.0.0./16
+# in my case i have 3 availability zone. though, i create subnets for
+# each Availability zone
+# create 3 public subnets and 3 private subnets each AZ
+# create internet gateway for public subnets
+# IAM key is passed from environmental variables
+- name: create VPC & public private subnets for each AZ
+  hosts: control
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: create vpc with 10.0.0.0/16
+      ec2_vpc_net:
+        name: ansibletest
+        cidr-block: 10.0.0.0/16
+        region: "{{defaul_region}}"
+        tags:
+          Name: ansibletest
+        state: present
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        tenancy: default
+        dns_hostnames: yes
+        dns_support: yes
+      register: vpc_info
+      #store output of ec2 infroamtion
+
+# start of public subnets -------------------------------
+    - name: create public subnets 1a, 1b, 1c
+      ec2_vpc_subnet:
+        state: present
+        vpc_id: "{{vpc_info.vpc.id}}"
+        #apply vpc-id from registered variables
+        cidr: 10.0.1.0/24
+        az: us-east-1a
+        map_public: yes
+        tags:
+          Name: pub_sub_az_1a
+
+      register: pub_sub_az_1a
+
+      ec2_vpc_subnet:
+        state: present
+        vpc_id: "{{vpc_info.vpc.id}}"
+        #apply vpc-id from registered variables
+        cidr: 10.0.2.0/24
+        az: us-east-1b
+        map_public: yes
+        tags:
+          Name: pub_sub_az_1b
+      register: pub_sub_az_1b
+
+      ec2_vpc_subnet:
+        state: present
+        vpc_id: "{{vpc_info.vpc.id}}"
+        #apply vpc-id from registered variables
+        cidr: 10.0.3.0/24
+        az: us-east-1c
+        map_public: yes
+        tags:
+          Name: pub_sub_az_1c
+      register: pub_sub_az_1c
+#End of the public subnets---------------------------------
+
+# begging of private subnets--------------------------------
+    - name: create private subnets 1a, 1b, 1c
+      ec2_vpc_subnet:
+        state: present
+        vpc_id: "{{vpc_info.vpc.id}}"
+        #apply vpc-id from registered variables
+        cidr: 10.0.4.0/24
+        az: us-east-1a
+        map_public: yes
+        tags:
+          Name: priv_sub_az_1a
+      register: priv_sub_az_1a
+
+      ec2_vpc_subnet:
+        state: present
+        vpc_id: "{{vpc_info.vpc.id}}"
+        #apply vpc-id from registered variables
+        cidr: 10.0.5.0/24
+        az: us-east-1b
+        map_public: yes
+        tags:
+          Name: priv_sub_az_1b
+      register: priv_sub_az_1b
+
+      ec2_vpc_subnet:
+        state: present
+        vpc_id: "{{vpc_info.vpc.id}}"
+        #apply vpc-id from registered variables
+        cidr: 10.0.6.0/24
+        az: us-east-1c
+        map_public: yes
+        tags:
+          Name: priv_sub_az_1c
+      register: priv_sub_az_1c
+# end of the private subnets-------------------------------
+
+# create Inernet gateway
+    - name: create internet gateway for vpc
+      ec2_vpc_igw:
+        vpc_id: "{{vpc_info.vpc.id}}"
+        state: present
+        tags:
+          Name: IG_Gateway
+# end of internet gateway creation---------------------------
+
+# create routing table for public and private subnets
+    - name: create public routing table
+      ec2_vpc_route_table:
+        vpc_id: "{{vpc_info.vpc.id}}"
+        state: present
+        tags:
+          Name: pub_route
+      # association of subnets
+      # I am giving subnet tag name instead of ID
+        subnets:
+          - pub_sub_az_1a  "{{pub_sub_az_1a.subnet.id}}"
+          - pub_sub_az_1b  "{{pub_sub_az_1b.subnet.id}}"
+          - pub_sub_az_1c  "{{pub_sub_az_1c.subnet.id}}"
