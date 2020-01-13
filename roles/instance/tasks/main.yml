@@ -1,0 +1,34 @@
+---
+# tasks file for instance
+
+- name: find ami-id based on region, here I'm passing region from ~./aws/config
+  ec2_ami_find:
+    name: "ubuntu/images/ebs/ubuntu-trusty-14.04-amd64-server-*"
+    owner: self
+    aws_region: "{{default_region}}"
+  register: result_ami
+
+
+- name: create ec2 instance 3 with demo tag
+  ec2:
+    key_name: ec2_key
+    group: LAMP_Stack
+    instance_type: t2.micro
+    #region=us-east-1  ami-c998b6b2
+    image: "{{ result_ami.results[0].ami_id }}"
+    wait: true
+    exact_count: 3
+    count_tag:
+      Name: LAMP_Stack
+    instance_tags:
+      Name: "{{item}}"
+      with_item:
+        - webserver
+        - mysql
+        - lb
+    termination_protection: yes
+  register: ec2
+
+- name: add instance IP to hosts group
+  add_host: hostname={{item.public_ip}} groups=ec2hosts
+  loop: "{{ec2.instances}}"
