@@ -2,5 +2,3 @@
 # vars file for instance
 #region=us-east-1
 default_region: us-east-1
-aws_access_key: "xxx"
-aws_secret_key: "yyy"
