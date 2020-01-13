@@ -1,0 +1,13 @@
+---
+- name: test
+  hosts: control
+  gather_facts: false
+  tasks:
+    - name: find ami-id
+    - name: create ec2 instance 3 with demo tag
+      ec2:
+        key_name: ec2_key
+        group: LAMP_Stack
+        instance_type: t2.micro
+        #region=us-east-1
+        image: ami-c998b6b2
