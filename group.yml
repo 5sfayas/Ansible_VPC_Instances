@@ -1,0 +1,38 @@
+---
+- name: create security group with 22,80,443 port
+  hosts: control
+  gather_facts: false
+  tasks:
+    - name: sg with 22,80,443 port enable
+      ec2_group:
+        name: LAMP_Stack
+        description: sg with 22,80,443 port enable
+    # right now I'am using vpc_id from ./group_vars/all.yml
+        vpc_id: "{{vpc_id}}"
+        rules:
+          - proto: tcp
+            from_port: 80
+            to_port: 80
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 443
+            to_port: 443
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 3306
+            to_port: 3306
+            cidr_ip: 0.0.0.0/0
+        rules_egress:
+          - proto: all #-1 can also be used
+            from_port: 0
+            to_port: 0
+            cidr_ip: 0.0.0.0/0
+      register: sg
+
+      lineinfile:
+        path: ./group_vars/all.yml
+        line: 'group_id: "{{sg.group_id}}"'
