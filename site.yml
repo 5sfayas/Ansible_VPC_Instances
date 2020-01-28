@@ -1,0 +1,4 @@
+---
+- import_playbook: vpc.yml
+- import_playbook: group.yml
+- import_playbook: instance.yml
