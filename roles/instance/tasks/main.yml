@@ -1,10 +1,11 @@
 ---
 # tasks file for instance
+- include_vars: ./group_vars/all.yml
 
 - name: find ami-id based on region, here I'm passing region from ~./aws/config
   ec2_ami_find:
     name: "ubuntu/images/ebs/ubuntu-trusty-14.04-amd64-server-*"
-    owner: self
+    owner: aws-marketplace
     aws_region: "{{default_region}}"
     aws_access_key: "{{ aws_access_key }}"
     aws_secret_key: "{{ aws_secret_key }}"
@@ -18,7 +19,7 @@
     instance_type: t2.micro
     #region=us-east-1  ami-c998b6b2
     image: "{{ result_ami.results[0].ami_id }}"
-    wait: true
+    wait: yes
     exact_count: 3
     count_tag:
       Name: LAMP_Stack

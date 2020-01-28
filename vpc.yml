@@ -13,8 +13,8 @@
     - name: create vpc with 10.0.0.0/16
       ec2_vpc_net:
         name: ansibletest
-        cidr-block: 10.0.0.0/16
-        region: "{{defaul_region}}"
+        cidr_block: 10.0.0.0/16
+        region: "{{default_region}}"
         tags:
           Name: ansibletest
         state: present
@@ -37,7 +37,6 @@
         map_public: yes
         tags:
           Name: pub_sub_az_1a
-
       register: pub_sub_az_1a
 
       ec2_vpc_subnet:
@@ -136,8 +135,8 @@
         path: ./group_vars/all.yml
         line: "{{item}}"
         with_item:
-          - "vpc_id: "{{vpc_info.vpc.id}}""
-          - "pub_sub_az_1a: "{{pub_sub_az_1a.subnet.id}}""
-          - "pub_sub_az_1b: "{{pub_sub_az_1b.subnet.id}}""
-          - "pub_sub_az_1c: "{{pub_sub_az_1c.subnet.id}}""
-          - "IG_Gateway_id: "{{ igw.gateway_id }}"
+          - 'vpc_id: "{{vpc_info.vpc.id}}"'
+          - 'pub_sub_az_1a: "{{pub_sub_az_1a.subnet.id}}"'
+          - 'pub_sub_az_1b: "{{pub_sub_az_1b.subnet.id}}"'
+          - 'pub_sub_az_1c: "{{pub_sub_az_1c.subnet.id}}"'
+          - 'IG_Gateway_id: "{{ igw.gateway_id }}"'
