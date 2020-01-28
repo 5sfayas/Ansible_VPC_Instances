@@ -23,6 +23,9 @@
     exact_count: 3
     count_tag:
       Name: LAMP_Stack
+    # could not figure out to plaze each instance for each subnets
+    # I am thinking that why wouldn't I have 3 tier base yml file and have role for each tier
+    ec2_vpc_subnet: "{{pub_sub_az_1a}}"
     instance_tags:
       Name: "{{item}}"
       with_item:

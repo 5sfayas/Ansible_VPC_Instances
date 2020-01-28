@@ -37,3 +37,4 @@
   lineinfile:
     path: ./group_vars/all.yml
     line: 'group_id: "{{sg.group_id}}"'
+    state: present

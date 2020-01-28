@@ -1,7 +1,7 @@
 ---
 # tasks file for vpc
 #note: you can have diffrent roles for vpc, private and public subnet
-# to simply change the associations. But, kep this way 
+# to simply change the associations. But, kep this way
 # create vpc 10.0.0./16
 # in my case i have 3 availability zone. though, i create subnets for
 # each Availability zone
@@ -140,3 +140,4 @@
       - 'pub_sub_az_1b: "{{pub_sub_az_1b.subnet.id}}"'
       - 'pub_sub_az_1c: "{{pub_sub_az_1c.subnet.id}}"'
       - 'IG_Gateway_id: "{{ igw.gateway_id }}"'
+    state: present
